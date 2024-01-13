@@ -109,18 +109,20 @@ public final class NumericalJava {
             return "%f+%f i".formatted(real, imag);
         }
 
-        public static Complex exp(Complex c) {
-            return new Complex(Math.exp(c.real) * Math.cos(c.imag), Math.exp(c.real) * Math.sin(c.imag));
-        }
 
-        public static Complex log(Complex c) {
-            if (c.real < 0 && c.imag == 0) {
-                return new Complex(0.5 * Math.log(c.absVal2()), -Math.PI);
-            } else {
-                return new Complex(0.5 * Math.log(c.absVal2()), Math.atan2(c.imag, c.real));
-            }
-        }
 
+    }
+
+    public static Complex exp(Complex c) {
+        return new Complex(Math.exp(c.real) * Math.cos(c.imag), Math.exp(c.real) * Math.sin(c.imag));
+    }
+
+    public static Complex log(Complex c) {
+        if (c.real < 0 && c.imag == 0) {
+            return new Complex(0.5 * Math.log(c.absVal2()), -Math.PI);
+        } else {
+            return new Complex(0.5 * Math.log(c.absVal2()), Math.atan2(c.imag, c.real));
+        }
     }
 
 
