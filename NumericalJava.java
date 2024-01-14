@@ -1,7 +1,10 @@
 package com.example.tools;
 
 
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
+import java.util.stream.Collectors;
 
 public final class NumericalJava {
 
@@ -37,12 +40,59 @@ public final class NumericalJava {
 
     }
 
-    public static double[] abs(Complex[] x){
+    public static double[] abs(Complex[] x) {
         return Arrays.stream(x).mapToDouble(Complex::absVal).toArray();
     }
 
-    public static double norm(Complex[] x){
+    public static double norm(Complex[] x) {
         return Arrays.stream(abs(x)).sum();
+    }
+
+//    public static List<Complex> fft(List<Complex> x) {
+//
+//        int N = x.size();
+//
+//        Complex[] W = new Complex[N];
+//        List<Complex> X = new ArrayList<>(N);
+//
+//        for (int i = 0; i < N; i++) {
+//            W[i] = new Complex(Math.cos(2 * Math.PI / N * i), -Math.sin(2 * Math.PI / N * i));
+//        }
+//
+//        for (int k = 0; k < N; k++) {
+//            X.add(new Complex(0, 0));
+//            for (int n = 0; n < N; n++) {
+//                X.set(k,add(X.get(k), mul(x.get(n), W[(k * n) % N]))) ;
+//            }
+//        }
+//
+//        return X;
+//
+//    }
+
+    public static List<Double> abs(List<Complex> x) {
+        return x.stream().mapToDouble(Complex::absVal).boxed().collect(Collectors.toList());
+    }
+
+    public static List<Complex> fft(List<Double> x, boolean isShifted) {
+
+        int N = x.size();
+
+        Complex[] W = new Complex[N];
+        List<Complex> X = new ArrayList<>(N);
+
+        for (int i = 0; i < N; i++) {
+            W[i] = new Complex(Math.cos(2 * Math.PI / N * i), -Math.sin(2 * Math.PI / N * i));
+        }
+
+        for (int k = 0; k < N; k++) {
+            X.add(new Complex(0, 0));
+            for (int n = 0; n < N; n++) {
+                X.set(k, add(X.get(k), mul(x.get(n) * (isShifted && (n % 2 == 1) ? -1 : 1), W[(k * n) % N])));
+            }
+        }
+
+        return X;
     }
 
     public static Complex[] fft(Complex[] x) {
@@ -67,7 +117,7 @@ public final class NumericalJava {
 
     }
 
-    public static Complex[] fft(double[] x,boolean isShifted) {
+    public static Complex[] fft(double[] x, boolean isShifted) {
 
         int N = x.length;
 
@@ -83,7 +133,7 @@ public final class NumericalJava {
 //            System.out.println("__________________________");
             for (int n = 0; n < N; n++) {
 //                System.out.println((k*n%2==1));
-                X[k] = add(X[k], mul(x[n] * (isShifted && ( n % 2 == 1) ? -1 : 1), W[(k * n) % N]));
+                X[k] = add(X[k], mul(x[n] * (isShifted && (n % 2 == 1) ? -1 : 1), W[(k * n) % N]));
             }
         }
 
@@ -158,7 +208,7 @@ public final class NumericalJava {
         return div(cos(c), sin(c));
     }
 
-    public static class Complex {
+    public final static class Complex {
         double real, imag;
 
         public Complex(double real, double imag) {
@@ -194,7 +244,7 @@ public final class NumericalJava {
         }
 
         public String toString() {
-            return "%f+%f i".formatted(real, imag);
+            return imag >= 0 ? "%f+%f i".formatted(real, imag) : "%f-%f i".formatted(real, -imag);
         }
 
 
