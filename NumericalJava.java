@@ -1,7 +1,95 @@
 package com.example.tools;
 
 
+import java.util.Arrays;
+
 public final class NumericalJava {
+
+    public static void main(String[] args) {
+
+        Complex[] x = new Complex[]{
+                new Complex(1, 0),
+                new Complex(0, 0),
+                new Complex(0, 0),
+                new Complex(0, 0),
+                new Complex(0, 0),
+        };
+
+        System.out.println(Arrays.toString(x));
+        System.out.println(Arrays.toString(fft(x)));
+
+//        System.out.println(exp(new Complex(0.1,0.2)));
+//        Complex[] W10=new Complex[]{
+//                new Complex(Math.cos(2*Math.PI/10*0),-Math.sin(2*Math.PI/10*0)),
+//                new Complex(Math.cos(2*Math.PI/10*1),-Math.sin(2*Math.PI/10*1)),
+//                new Complex(Math.cos(2*Math.PI/10*2),-Math.sin(2*Math.PI/10*2)),
+//                new Complex(Math.cos(2*Math.PI/10*3),-Math.sin(2*Math.PI/10*3)),
+//                new Complex(Math.cos(2*Math.PI/10*4),-Math.sin(2*Math.PI/10*4)),
+//                new Complex(Math.cos(2*Math.PI/10*5),-Math.sin(2*Math.PI/10*5)),
+//                new Complex(Math.cos(2*Math.PI/10*6),-Math.sin(2*Math.PI/10*6)),
+//                new Complex(Math.cos(2*Math.PI/10*7),-Math.sin(2*Math.PI/10*7)),
+//                new Complex(Math.cos(2*Math.PI/10*8),-Math.sin(2*Math.PI/10*8)),
+//                new Complex(Math.cos(2*Math.PI/10*9),-Math.sin(2*Math.PI/10*9)),
+//        };
+//
+//        System.out.println(Arrays.toString(W10));
+
+
+    }
+
+    public static double[] abs(Complex[] x){
+        return Arrays.stream(x).mapToDouble(Complex::absVal).toArray();
+    }
+
+    public static double norm(Complex[] x){
+        return Arrays.stream(abs(x)).sum();
+    }
+
+    public static Complex[] fft(Complex[] x) {
+
+        int N = x.length;
+
+        Complex[] W = new Complex[N];
+        Complex[] X = new Complex[N];
+
+        for (int i = 0; i < N; i++) {
+            W[i] = new Complex(Math.cos(2 * Math.PI / N * i), -Math.sin(2 * Math.PI / N * i));
+        }
+
+        for (int k = 0; k < N; k++) {
+            X[k] = new Complex(0, 0);
+            for (int n = 0; n < N; n++) {
+                X[k] = add(X[k], mul(x[n], W[(k * n) % N]));
+            }
+        }
+
+        return X;
+
+    }
+
+    public static Complex[] fft(double[] x,boolean isShifted) {
+
+        int N = x.length;
+
+        Complex[] W = new Complex[N];
+        Complex[] X = new Complex[N];
+
+        for (int i = 0; i < N; i++) {
+            W[i] = new Complex(Math.cos(2 * Math.PI / N * i), -Math.sin(2 * Math.PI / N * i));
+        }
+
+        for (int k = 0; k < N; k++) {
+            X[k] = new Complex(0, 0);
+//            System.out.println("__________________________");
+            for (int n = 0; n < N; n++) {
+//                System.out.println((k*n%2==1));
+                X[k] = add(X[k], mul(x[n] * (isShifted && ( n % 2 == 1) ? -1 : 1), W[(k * n) % N]));
+            }
+        }
+
+        return X;
+
+    }
 
     public static Complex add(Complex c, double x) {
         return new Complex(c.real + x, c.imag);
@@ -36,7 +124,7 @@ public final class NumericalJava {
     }
 
     public static Complex mul(Complex c1, Complex c2) {
-        return new Complex(c1.real * c2.real - c1.imag + c2.imag, c1.real * c2.imag + c1.imag + c2.real);
+        return new Complex(c1.real * c2.real - c1.imag * c2.imag, c1.real * c2.imag + c1.imag * c2.real);
     }
 
     public static Complex div(Complex c, double x) {
@@ -108,7 +196,6 @@ public final class NumericalJava {
         public String toString() {
             return "%f+%f i".formatted(real, imag);
         }
-
 
 
     }
